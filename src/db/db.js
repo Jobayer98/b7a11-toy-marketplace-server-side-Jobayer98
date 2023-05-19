@@ -62,7 +62,6 @@ const addNewToy = async (data) => {
   }
 };
 
-// run().catch(console.dir);
 module.exports = {
   getToys,
   getToyById,

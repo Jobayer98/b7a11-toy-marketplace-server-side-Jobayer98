@@ -24,13 +24,12 @@ app.get("/toys", async (req, res) => {
 app.get("/toys/:toyId", async (req, res) => {
   const id = req.params.toyId;
   const toy = await getToyById(id);
-  console.log(toy);
+
   res.send(toy);
 });
 
 app.post("/toys", async (req, res) => {
   const data = req.body;
-  //   console.log(data);
 
   const result = await addNewToy(data);
   res.send(result);
