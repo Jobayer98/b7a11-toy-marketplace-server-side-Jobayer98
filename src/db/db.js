@@ -22,7 +22,7 @@ const connect = async () => {
     await client.connect();
     console.log("You successfully connected to MongoDB!");
   } catch (e) {
-    console.log(e);
+    return e;
   }
 };
 
@@ -48,7 +48,7 @@ const getToyById = async (id) => {
     const user = await toysCollection.findOne(query);
     return user;
   } catch (e) {
-    console.log("error", e);
+    return e;
   }
 };
 
@@ -58,7 +58,7 @@ const addNewToy = async (data) => {
     const result = await toysCollection.insertOne(data);
     return result;
   } catch (e) {
-    console.log(e);
+    return e;
   }
 };
 
@@ -75,7 +75,19 @@ const updateToy = async (id, updateData) => {
 
     return result;
   } catch (e) {
-    console.log(e);
+    return e;
+  }
+};
+
+// delete a toy
+const deleteToy = async (id) => {
+  try {
+    const query = { _id: new ObjectId(id) };
+    const result = await toysCollection.deleteOne(query);
+
+    return result;
+  } catch (e) {
+    return e;
   }
 };
 
@@ -84,4 +96,5 @@ module.exports = {
   getToyById,
   addNewToy,
   updateToy,
+  deleteToy,
 };

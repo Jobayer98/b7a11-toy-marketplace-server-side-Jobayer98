@@ -3,7 +3,13 @@ const express = require("express");
 const cors = require("cors");
 
 // internal module
-const { getToyById, getToys, addNewToy, updateToy } = require("./db/db");
+const {
+  getToyById,
+  getToys,
+  addNewToy,
+  updateToy,
+  deleteToy,
+} = require("./db/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -19,6 +25,10 @@ app.get("/", (req, res) => {
 // get all toys
 app.get("/toys", async (req, res) => {
   const toys = await getToys();
+
+  if (!toys) {
+    return res.status(404).send({ status: false, message: "Toys not found" });
+  }
   res.send(toys);
 });
 
@@ -27,6 +37,9 @@ app.get("/toys/:toyId", async (req, res) => {
   const id = req.params.toyId;
   const toy = await getToyById(id);
 
+  if (!toy) {
+    return res.status(404).send({ status: false, message: "Toys not found" });
+  }
   res.send(toy);
 });
 
@@ -35,7 +48,13 @@ app.post("/toys", async (req, res) => {
   const data = req.body;
 
   const result = await addNewToy(data);
-  res.send(result);
+
+  if (!result.insertedId) {
+    return res
+      .status(400)
+      .send({ status: false, message: "Failed to add toy" });
+  }
+  res.status(200).send({ status: true, message: "Added successfuly" });
 });
 
 // update a toy
@@ -44,7 +63,24 @@ app.patch("/toys/:toyId", async (req, res) => {
   const data = req.body;
 
   const result = await updateToy(id, data);
-  res.send(result);
+
+  if (!result.modifiedCount > 0) {
+    return res.status(404).send({ status: false, message: "Toy not found" });
+  }
+  res.status(200).send({ status: true, message: "Updated successfuly" });
+});
+
+// delete a toy
+app.delete("/toys/:toyId", async (req, res) => {
+  const id = req.params.toyId;
+
+  const result = await deleteToy(id);
+
+  if (!result.deletedCount > 0) {
+    return res.status(404).send({ status: false, message: "Toy not found" });
+  }
+
+  res.status(200).send({ status: true, message: "Deleted successfuly" });
 });
 
 app.listen(port, () => {
