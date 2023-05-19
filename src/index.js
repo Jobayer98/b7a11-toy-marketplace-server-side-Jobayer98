@@ -19,6 +19,28 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// verify token
+const verify_jwt = (req, res, next) => {
+  const authorization = req.headers.authorization;
+
+  if (!authorization) {
+    return res
+      .status(401)
+      .send({ error: true, message: "unauthorized access" });
+  }
+
+  const token = authorization.split(" ")[1];
+  jwt.verify(token, "mySecret", (error, decoded) => {
+    if (error) {
+      return res
+        .status(403)
+        .send({ error: true, message: "unauthorized accesss" });
+    }
+    req.decoded = decoded;
+    next();
+  });
+};
+
 app.get("/", (req, res) => {
   res.send({ msg: "welcome to toyland server" });
 });
@@ -31,7 +53,7 @@ app.post("/jwt", (req, res) => {
 });
 
 // get all toys
-app.get("/toys", async (req, res) => {
+app.get("/toys", verify_jwt, async (req, res) => {
   const toys = await getToys();
 
   if (!toys) {
@@ -41,7 +63,7 @@ app.get("/toys", async (req, res) => {
 });
 
 // get a specific toy
-app.get("/toys/:toyId", async (req, res) => {
+app.get("/toys/:toyId", verify_jwt, async (req, res) => {
   const id = req.params.toyId;
   const toy = await getToyById(id);
 
