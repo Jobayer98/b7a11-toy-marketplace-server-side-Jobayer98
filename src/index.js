@@ -12,16 +12,25 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-// connect to database
-connect();
-
 app.get("/", (req, res) => {
   res.send({ msg: "welcome to toyland server" });
 });
 
 app.get("/toys", async (req, res) => {
+  // connect to database
+  await connect();
+
   const toys = await getToys();
   res.send(toys);
+});
+
+app.get("/toys/:toyId", async (req, res) => {
+  // connect to database
+  await connect();
+
+  const id = req.params.toyId;
+  const toy = await getToyById(id);
+  res.send(toy);
 });
 
 app.listen(port, () => {

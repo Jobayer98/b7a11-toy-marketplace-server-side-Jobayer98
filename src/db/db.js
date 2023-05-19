@@ -3,6 +3,7 @@ require("dotenv").config();
 
 const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
 
+// connect to database uri for local
 // const uri = "mongodb://localhost:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
@@ -25,9 +26,9 @@ const connect = async () => {
   }
 };
 
+// read all toys
 async function getToys() {
   try {
-    await client.connect();
     const result = await toysCollection.find().toArray();
     return result;
   } catch (e) {
@@ -35,8 +36,8 @@ async function getToys() {
   }
 }
 
+// read toy by id
 const getToyById = async (id) => {
-  await client.connect();
   const query = {
     _id: new ObjectId(id),
   };
@@ -45,8 +46,6 @@ const getToyById = async (id) => {
     return user;
   } catch (e) {
     console.log("error", e);
-  } finally {
-    await client.close();
   }
 };
 
