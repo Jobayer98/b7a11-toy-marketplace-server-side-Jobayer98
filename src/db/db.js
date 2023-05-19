@@ -55,7 +55,24 @@ const getToyById = async (id) => {
 // add a new toy
 const addNewToy = async (data) => {
   try {
-    const result = toysCollection.insertOne(data);
+    const result = await toysCollection.insertOne(data);
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
+// update a toy
+const updateToy = async (id, updateData) => {
+  try {
+    const filter = { _id: new ObjectId(id) };
+    const option = { upsert: true };
+    const updateToy = {
+      $set: updateData,
+    };
+    console.log(updateToy);
+    const result = await toysCollection.updateOne(filter, updateToy, option);
+
     return result;
   } catch (e) {
     console.log(e);
@@ -66,4 +83,5 @@ module.exports = {
   getToys,
   getToyById,
   addNewToy,
+  updateToy,
 };
