@@ -1,6 +1,7 @@
 // external module
 const express = require("express");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 // internal module
 const {
@@ -20,6 +21,13 @@ app.use(express.json());
 
 app.get("/", (req, res) => {
   res.send({ msg: "welcome to toyland server" });
+});
+
+// generate a token
+app.post("/jwt", (req, res) => {
+  const data = req.body;
+  const token = jwt.sign(data, "mySecret");
+  res.send({ token });
 });
 
 // get all toys
