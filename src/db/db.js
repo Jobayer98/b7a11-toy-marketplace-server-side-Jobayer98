@@ -1,10 +1,10 @@
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 
-const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.USER_NAME}:${process.env.USER_PASSWORD}@cluster0.jk7pgvw.mongodb.net/?retryWrites=true&w=majority`;
 
 // connect to database uri for local
-// const uri = "mongodb://localhost:27017";
+const uri = "mongodb://127.0.0.1:27017";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -25,6 +25,9 @@ const connect = async () => {
     console.log(e);
   }
 };
+
+// connect to database
+connect();
 
 // read all toys
 async function getToys() {
@@ -49,9 +52,19 @@ const getToyById = async (id) => {
   }
 };
 
+// add a new toy
+const addNewToy = async (data) => {
+  try {
+    const result = toysCollection.insertOne(data);
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+};
+
 // run().catch(console.dir);
 module.exports = {
-  connect,
   getToys,
   getToyById,
+  addNewToy,
 };

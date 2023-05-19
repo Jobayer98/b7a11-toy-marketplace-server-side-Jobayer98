@@ -3,7 +3,7 @@ const express = require("express");
 const cors = require("cors");
 
 // internal module
-const { connect, getToyById, getToys } = require("./db/db");
+const { getToyById, getToys, addNewToy } = require("./db/db");
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -17,20 +17,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/toys", async (req, res) => {
-  // connect to database
-  await connect();
-
   const toys = await getToys();
   res.send(toys);
 });
 
 app.get("/toys/:toyId", async (req, res) => {
-  // connect to database
-  await connect();
-
   const id = req.params.toyId;
   const toy = await getToyById(id);
+  console.log(toy);
   res.send(toy);
+});
+
+app.post("/toys", async (req, res) => {
+  const data = req.body;
+  //   console.log(data);
+
+  const result = await addNewToy(data);
+  res.send(result);
 });
 
 app.listen(port, () => {
