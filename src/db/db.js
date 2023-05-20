@@ -27,14 +27,18 @@ const connect = async () => {
 connect();
 
 // read all toys
-async function getToys() {
+const getToys = async (skip, limit) => {
   try {
-    const result = await toysCollection.find().toArray();
+    const result = await toysCollection
+      .find()
+      .skip(skip)
+      .limit(limit)
+      .toArray();
     return result;
   } catch (e) {
     return e;
   }
-}
+};
 
 // read toy by id
 const getToyById = async (id) => {

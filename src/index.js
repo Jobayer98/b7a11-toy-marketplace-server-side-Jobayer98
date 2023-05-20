@@ -55,8 +55,11 @@ app.post("/jwt", (req, res) => {
 
 // get all toys
 app.get("/toys", async (req, res) => {
+  const limit = parseInt(req.query.limit) || 20;
+  const page = parseInt(req.query.page) || 1;
+  const skip = (page - 1) * limit;
   try {
-    const toys = await getToys();
+    const toys = await getToys(skip, limit);
 
     if (!toys) {
       return res.status(404).send({ status: false, message: "Toys not found" });
