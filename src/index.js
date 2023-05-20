@@ -10,6 +10,7 @@ const {
   addNewToy,
   updateToy,
   deleteToy,
+  totalToy,
 } = require("./db/db");
 
 const app = express();
@@ -30,7 +31,7 @@ const verify_jwt = (req, res, next) => {
   }
 
   const token = authorization.split(" ")[1];
-  jwt.verify(token, "mySecret", (error, decoded) => {
+  jwt.verify(token, process.env.SECRET_KEY, (error, decoded) => {
     if (error) {
       return res
         .status(403)
@@ -48,12 +49,12 @@ app.get("/", (req, res) => {
 // generate a token
 app.post("/jwt", (req, res) => {
   const data = req.body;
-  const token = jwt.sign(data, "mySecret");
+  const token = jwt.sign(data, process.env.SECRET_KEY);
   res.send({ token });
 });
 
 // get all toys
-app.get("/toys", verify_jwt, async (req, res) => {
+app.get("/toys", async (req, res) => {
   const toys = await getToys();
 
   if (!toys) {
@@ -63,7 +64,7 @@ app.get("/toys", verify_jwt, async (req, res) => {
 });
 
 // get a specific toy
-app.get("/toys/:toyId", verify_jwt, async (req, res) => {
+app.get("/toys/:toyId", async (req, res) => {
   const id = req.params.toyId;
   const toy = await getToyById(id);
 
@@ -111,6 +112,16 @@ app.delete("/toys/:toyId", async (req, res) => {
   }
 
   res.status(200).send({ status: true, message: "Deleted successfuly" });
+});
+
+// get total number of toys
+app.get("/total-toy", async (req, res) => {
+  const result = await totalToy();
+
+  if (!result) {
+    return res.status(404).send("No toy found");
+  }
+  res.send({ totalToy: result });
 });
 
 app.listen(port, () => {
