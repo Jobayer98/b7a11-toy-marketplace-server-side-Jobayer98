@@ -55,23 +55,33 @@ app.post("/jwt", (req, res) => {
 
 // get all toys
 app.get("/toys", async (req, res) => {
-  const toys = await getToys();
+  try {
+    const toys = await getToys();
 
-  if (!toys) {
-    return res.status(404).send({ status: false, message: "Toys not found" });
+    if (!toys) {
+      return res.status(404).send({ status: false, message: "Toys not found" });
+    }
+    res.send(toys);
+  } catch (e) {
+    console.log(e);
   }
-  res.send(toys);
 });
 
 // get a specific toy
 app.get("/toys/:toyId", async (req, res) => {
-  const id = req.params.toyId;
-  const toy = await getToyById(id);
+  try {
+    const id = req.params.toyId;
+    console.log(id);
 
-  if (!toy) {
-    return res.status(404).send({ status: false, message: "Toys not found" });
+    const toy = await getToyById(id);
+
+    if (!toy) {
+      return res.status(404).send({ status: false, message: "Toys not found" });
+    }
+    res.send(toy);
+  } catch (e) {
+    console.log(e);
   }
-  res.send(toy);
 });
 
 // add a new toy
@@ -122,6 +132,11 @@ app.get("/total-toy", async (req, res) => {
     return res.status(404).send("No toy found");
   }
   res.send({ totalToy: result });
+});
+
+// handle error
+app.get("*", (req, res) => {
+  res.send({ imessage: "Path is not valid" });
 });
 
 app.listen(port, () => {
