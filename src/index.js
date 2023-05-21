@@ -58,8 +58,11 @@ app.get("/toys", async (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
   const page = parseInt(req.query.page) || 1;
   const skip = (page - 1) * limit;
+  const email = req.query.email;
+  const category = req.query.category;
+
   try {
-    const toys = await getToys(skip, limit);
+    const toys = await getToys(skip, limit, email, category);
 
     if (!toys) {
       return res.status(404).send({ status: false, message: "Toys not found" });
@@ -72,24 +75,31 @@ app.get("/toys", async (req, res) => {
 
 // get a specific toy
 app.get("/toys/:toyId", async (req, res) => {
-  try {
-    const id = req.params.toyId;
-    console.log(id);
+  const id = req.params.toyId;
+  console.log(id);
 
-    const toy = await getToyById(id);
+  const toy = await getToyById(id);
 
-    if (!toy) {
-      return res.status(404).send({ status: false, message: "Toys not found" });
-    }
-    res.send(toy);
-  } catch (e) {
-    console.log(e);
+  if (!toy) {
+    return res.status(404).send({ status: false, message: "Toys not found" });
   }
+  res.send(toy);
+});
+
+// get total number of toys
+app.get("/total-toy", async (req, res) => {
+  const result = await totalToy();
+
+  if (!result) {
+    return res.status(404).send("No toy found");
+  }
+  res.send({ totalToy: result });
 });
 
 // add a new toy
 app.post("/toys", async (req, res) => {
   const data = req.body;
+  console.log(data);
 
   const result = await addNewToy(data);
 
@@ -117,7 +127,6 @@ app.patch("/toys/:toyId", async (req, res) => {
 // delete a toy
 app.delete("/toys/:toyId", async (req, res) => {
   const id = req.params.toyId;
-
   const result = await deleteToy(id);
 
   if (!result.deletedCount > 0) {
@@ -125,16 +134,6 @@ app.delete("/toys/:toyId", async (req, res) => {
   }
 
   res.status(200).send({ status: true, message: "Deleted successfuly" });
-});
-
-// get total number of toys
-app.get("/total-toy", async (req, res) => {
-  const result = await totalToy();
-
-  if (!result) {
-    return res.status(404).send("No toy found");
-  }
-  res.send({ totalToy: result });
 });
 
 // handle error

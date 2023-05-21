@@ -14,9 +14,9 @@ const client = new MongoClient(uri, {
 
 const toysCollection = client.db("toyLandDB").collection("toys");
 
-const connect = async () => {
+const connect = () => {
   try {
-    await client.connect();
+    client.connect();
     console.log("You successfully connected to MongoDB!");
   } catch (e) {
     return e;
@@ -27,10 +27,17 @@ const connect = async () => {
 connect();
 
 // read all toys
-const getToys = async (skip, limit) => {
+const getToys = async (skip, limit, email, category) => {
+  let query = {};
+  if (email) {
+    query = { user_email: email };
+  }
+  if (category) {
+    query = { category: category };
+  }
   try {
     const result = await toysCollection
-      .find()
+      .find(query)
       .skip(skip)
       .limit(limit)
       .toArray();
